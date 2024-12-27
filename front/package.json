@@ -9,17 +9,21 @@
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
+    "@types/react-bootstrap": "^0.32.37",
     "@types/react-dom": "^18.0.0",
     "@wepin/login-js": "^0.0.30",
     "@wepin/provider-js": "^0.0.30",
     "@wepin/sdk-js": "^0.0.30",
     "@wepin/wagmi-connector": "^2.0.0",
+    "bootstrap": "^5.3.3",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.7",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
     "react-scripts": "5.0.1",
     "typescript": "^4.4.2",
-    "web-vitals": "^2.1.0"
+    "web-vitals": "^2.1.0",
+    "zustand": "^5.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
