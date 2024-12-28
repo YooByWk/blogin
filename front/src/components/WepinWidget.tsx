@@ -1,6 +1,7 @@
 import { Account, AccountBalanceInfo, WepinSDK } from '@wepin/sdk-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Card, Spinner } from 'react-bootstrap';
+import TxWidget from './metamask/TxWidget';
 
 
 const WepinWidget = () => {
