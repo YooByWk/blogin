@@ -1,8 +1,9 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-const MonoModule = buildModule("MonoModule", (m) => {
-  const MonoMyNFT = m.contract("MonoMYNFT");
+const v4 = buildModule("v4", (m) => {
+  const MonoMyNFT = m.contract("MyNFTV4");
   return { MonoMyNFT };
 });
 
-export default MonoModule;
+export default v4;
+
