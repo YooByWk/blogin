@@ -1,16 +1,15 @@
-import React from 'react';
-import { Button } from 'react-bootstrap';
-import { ethers } from 'ethers';
-import abi from '../../abi/MyNFTV3.json';
+import React from "react";
+import { Button } from "react-bootstrap";
+import { ethers } from "ethers";
+import abi from "../../abi/MyNFTV3.json";
 interface VersionBtnProps {
   provider: ethers.BrowserProvider;
   signer: ethers.JsonRpcSigner;
 }
 const constractABI = abi.abi;
-const contractAddress = '0x0eeC786AF0C92a40E0B4D46D750fdd0a1fC8211F';
+const contractAddress = "0x0eeC786AF0C92a40E0B4D46D750fdd0a1fC8211F";
 
 const VersionBtn: React.FC<VersionBtnProps> = ({ provider, signer }) => {
-
   const checkVersion = async () => {
     const contract = new ethers.Contract(contractAddress, constractABI, signer);
     console.log(contract);
@@ -19,7 +18,6 @@ const VersionBtn: React.FC<VersionBtnProps> = ({ provider, signer }) => {
     window.alert(res);
     return res;
   };
-
 
   return (
     <div>
