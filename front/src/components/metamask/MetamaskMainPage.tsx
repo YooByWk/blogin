@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import VersionBtn from "./VersionBtn";
 import AuthorBtn from "./AuthorBtn";
 import MintBtn from "./MintBtn";
+import MyNFTs from "./MyNFTs";
 
 const MetamaskMainPage = () => {
   const { metaAddress, setMetaAddress } = useUserStore();
@@ -81,6 +82,9 @@ const MetamaskMainPage = () => {
           {provider && signer && (
             <MintBtn provider={provider} signer={signer}></MintBtn>
           )}
+        </Card>
+        <Card style={cardStyle} bg="dark">
+          {provider && signer && <MyNFTs provider={provider} signer={signer} />}
         </Card>
       </div>
     </div>

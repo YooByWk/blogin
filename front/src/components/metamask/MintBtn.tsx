@@ -36,11 +36,7 @@ const MintBtn: React.FC<VersionBtnProps> = ({ provider, signer }) => {
   return (
     <div>
       <Button onClick={onClickMint}>민팅~</Button>
-      {txRes && (
-        <div>
-          <p>{txRes}</p>
-        </div>
-      )}
+      {txRes && <div></div>}
     </div>
   );
 };
