@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import useUserStore from '../../stores/user';
+import { Contract } from 'web3';
+import abi from "../../abi/MyNFTV3.json";
 
-const MetaOver = ({ provider, contract }) => {
+const constractABI = abi.abi;
+
+interface IMetaOver {
+  provider: any;
+  contract: Contract<typeof constractABI>;
+}
+const MetaOver = ({ provider, contract }: IMetaOver) => {
   const [balance, setBalance] = useState<number | undefined>(undefined);
   const { metaAddress } = useUserStore();
 
@@ -14,19 +22,35 @@ const MetaOver = ({ provider, contract }) => {
     if (!contract) return;
     try {
       console.log(contract);
-      const res = await contract.methods.getNFTsByOwner(metaAddress).call();
-      const nfts = await Promise.all(res.map(async (id) => {
-        const uri = await contract.methods.getTokenURI(id).call();
-        return uri;
-      }));
+      const res: string[] = (await contract.methods.getNFTsByOwner(metaAddress).call()) || []; // 빈 배열 처리
+      const nfts: string[] = await Promise.all(
+        res.map(async (id) => {
+          const uri: string = await contract.methods.getTokenURI(id).call();
+          return uri;
+        })
+      );
       console.log(nfts);
       setUrlLst(nfts);
+    } catch (error) {
+      console.log(error);
+      setUrlLst([]); // 에러 발생 시 빈 배열로 초기화
+    }
+  };
+
+
+  const mintNFT = async () => {
+    if (!contract) return;
+    try {
+      console.log(await contract.methods.owner().call());
+      const url = 'https://github.com/user-attachments/assets/9e317262-7e2e-4521-9f04-959b32ad0639';
+      await contract.methods.mintNFT(metaAddress, url).send({ from: metaAddress });
+      getNFTInfo();
+      window.alert('성공~');
     }
     catch (error) {
       console.log(error);
     }
   };
-
 
   useEffect(() => {
     const getBalance = async () => {
@@ -74,6 +98,9 @@ const MetaOver = ({ provider, contract }) => {
               </Card>
             </Col>))}
         </Row>
+      </Container>
+      <Container>
+        <Button onClick={mintNFT}>NFT 민팅</Button>
       </Container>
     </>
   );
