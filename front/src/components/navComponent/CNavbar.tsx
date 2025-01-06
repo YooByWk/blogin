@@ -12,7 +12,7 @@ const CNavBar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link onClick={() => navigate("/wepinLogin")}>Login</Nav.Link>
+            <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
             <Nav.Link onClick={() => navigate("/wallet")}>Wallet</Nav.Link>
             <Nav.Link onClick={() => navigate("/nft")}>NFT</Nav.Link>
             <Nav.Link onClick={() => navigate("/gallery")}>Gallery</Nav.Link>

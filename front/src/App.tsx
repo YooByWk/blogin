@@ -6,15 +6,18 @@ import WepinWidget from "./components/WepinWidget";
 import MetamaskMainPage from "./components/metamask/MetamaskMainPage";
 import CNavBar from "./components/navComponent/CNavbar";
 import { Container } from "react-bootstrap";
+import LoginPage from "./pages/LoginPage";
+import MetamaskMain from "./pages/MetamaskMain";
 
 function App() {
   return (
     <>
-      <CNavBar />
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/wepinLogin" element={<WepinLoginPage />} />
         <Route path="/wepinWidget" element={<WepinWidget />} />
+        <Route path="/metamaskmainpage" element={<MetamaskMain />} />
         <Route path="/metamask" element={<MetamaskMainPage />} />
       </Routes>
     </>
