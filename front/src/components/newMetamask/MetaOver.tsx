@@ -21,10 +21,23 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
   const getNFTInfo = async () => {
     if (!contract) return;
     try {
-      console.log(contract);
+      console.log(contract.events.Transfer({
+        fromBlock: 0,  // 블록 범위 설정 (여기서는 0부터 시작)
+      })
+        .on('data', (event) => {
+          console.log('Event Data:', event.returnValues);  // 이벤트에서 반환된 값
+        })
+        , 'evnets');
       const res: string[] = (await contract.methods.getNFTsByOwner(metaAddress).call()) || []; // 빈 배열 처리
+      const own = await contract.methods.balanceOf(metaAddress).call();
+      console.log(own, ';asdasd');
       const nfts: string[] = await Promise.all(
         res.map(async (id) => {
+          const curOwner = await contract.methods.ownerOf(id).call();
+
+          const isOwner = String(curOwner).toLowerCase() === String(metaAddress).toLowerCase();
+          console.log(id, isOwner);
+          if (!isOwner) return '';  // 소유자가 아니면 빈 문자열 반환
           const uri: string = await contract.methods.getTokenURI(id).call();
           return uri;
         })
@@ -37,9 +50,17 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
     }
   };
 
+  const onNFTClick = async (url) => {
+    console.log(url);
+    const res = await contract.methods.tokenURI(url).call();
+    const owner: string = await contract.methods.ownerOf(url).call();
+    console.log(res, String(owner).toLowerCase() === String(metaAddress).toLowerCase());
+  };
 
   const mintNFT = async () => {
     if (!contract) return;
+    console.log(contract);
+
     try {
       console.log(await contract.methods.owner().call());
       const url = 'https://github.com/user-attachments/assets/9e317262-7e2e-4521-9f04-959b32ad0639';
@@ -92,11 +113,14 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
         <h1 className='d-flex justify-content-center align-items-center'>내 NFT 목록</h1>
         <Row className='d-flex justify-content-center align-items-center mb-3 g-3' xs={1} md={2} lg={3}>
           {urlLst.map((url, index) => (
-            <Col key={index} style={colStyle}>
-              <Card style={cardContStyle}>
-                <Card.Img variant="top" src={url} style={cardStyle} />
-              </Card>
-            </Col>))}
+            url !== '' && (
+              <Col key={index} style={colStyle}>
+                <Card style={cardContStyle} onClick={() => onNFTClick(index)}>
+                  <Card.Img variant="top" src={url} style={cardStyle} />
+                </Card>
+              </Col>)
+          )
+          )}
         </Row>
       </Container>
       <Container>
