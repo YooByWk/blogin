@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import useUserStore from '../../stores/user';
-import { Contract } from 'web3';
+import Web3, { Contract } from 'web3';
 import abi from "../../abi/mainNFTContract#mainNFTContract.json";
 import MetaMintModal from './MetaMintModal';
 
@@ -12,6 +12,7 @@ interface IMetaOver {
   contract: Contract<typeof constractABI>;
 }
 const MetaOver = ({ provider, contract }: IMetaOver) => {
+  const web3 = new Web3();
   const [balance, setBalance] = useState<number | undefined>(undefined);
   const { metaAddress } = useUserStore();
 
@@ -64,8 +65,11 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
 
     try {
       console.log(await contract.methods.owner().call());
-      await contract.methods.custom_mintNFT(metaAddress, url).send({ from: metaAddress });
+      const receipt = await contract.methods.custom_mintNFT(metaAddress, url).send({ from: metaAddress });
       // getNFTInfo();
+      // console.log(receipt.transactionHash);
+      // await web3.eth.getTransactionReceipt(receipt.transactionHash);
+      console.log(receipt);
       window.alert('성공~');
     }
     catch (error) {

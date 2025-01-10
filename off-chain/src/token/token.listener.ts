@@ -15,21 +15,25 @@ export class TokenListener {
 
   async onModuleInit() {
     // 'Mint' 이벤트 리스닝
-    this.contract.on('Minted', async (user: string, tokenId, tokenURI: string) => {
+    await this.contract.on('Minted', async (user: string, tokenId, tokenURI: string, event: any) => {
+      console.log(event);
+      const block = event.log.blockNumber;
+      console.log(block);
       console.log('Mint event received:', user, tokenId.toString(), tokenURI);
       await this.handleMintEvent(user, tokenId, tokenURI);
     });
 
     // 'Burn' 이벤트 리스닝
-    this.contract.on('Burnt', async (user: string, tokenId) => {
+    await this.contract.on('Burnt', async (user: string, tokenId) => {
       console.log('Burn event received:', user, tokenId.toString());
       await this.handleBurnEvent(user, tokenId);
     });
 
     // 'Transfer' 이벤트 리스닝
-    this.contract.on('Transfer', async (from: string, to: string, tokenId) => {
+    await this.contract.on('Transfer', async (from: string, to: string, tokenId, event: any) => {
       if (from === '0x0000000000000000000000000000000000000000') { console.log('발행'); return; }
-
+      const block = event.log.blockNumber;
+      console.log(block);
       console.log('Transfer event received:', from, to, tokenId.toString());
       await this.handleTransferEvent(from, to, tokenId);
     });
