@@ -5,11 +5,17 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { Spinner, Container, Button, Navbar, Nav } from 'react-bootstrap';
 import MetaOver from '../components/newMetamask/MetaOver';
 import { ethers } from 'ethers';
-import abi from "../abi/MyNFTV3.json";
 import Web3 from 'web3';
 import LoginToast from '../components/LoginToast';
+import abi from "../abi/mainNFTContract#mainNFTContract.json";
+
+
+
 const constractABI = abi.abi;
 const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+
+
+console.debug(contractAddress);
 
 const MetamaskMain = () => {
   const navigate = useNavigate();
@@ -35,6 +41,16 @@ const MetamaskMain = () => {
       const provider = await detectEthereumProvider();
 
       if (provider) {
+        const chainId = await (provider as any).request({ method: 'eth_chainId' });
+        // console.log(chainId, 'chainId');
+        if (chainId !== '0x4268') { // 0x4268 = 17000
+          console.log('다른 체인아이디 사용으로 인한 변경');
+
+          await (provider as any).request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x4268' }],
+          });
+        }
 
         const isConnected = await (provider as any).isConnected();
         if (isConnected) {
