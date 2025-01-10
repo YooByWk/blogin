@@ -6,6 +6,7 @@ import { Button, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 const MetamaskLoginBtn = () => {
+
   const [error, setError] = useState<string | null>(null);
   const { metaAddress, setMetaAddress } = useUserStore();
   const navigate = useNavigate();
@@ -13,14 +14,13 @@ const MetamaskLoginBtn = () => {
   const connectWallet = async () => {
     try {
       const provider = await detectEthereumProvider();
-
       if (provider) {
         const accounts = await (provider as any).request({
           method: "eth_requestAccounts",
         });
         setMetaAddress(accounts[0]);
-        
-        navigate("/metamaskmainpage");
+
+        navigate("/metamaskmainpage", { state: { toast: true } });
 
       }
     } catch (error) {

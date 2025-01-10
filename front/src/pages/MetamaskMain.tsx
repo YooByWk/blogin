@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useUserStore from '../stores/user';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -7,17 +7,20 @@ import MetaOver from '../components/newMetamask/MetaOver';
 import { ethers } from 'ethers';
 import abi from "../abi/MyNFTV3.json";
 import Web3 from 'web3';
+import LoginToast from '../components/LoginToast';
 const constractABI = abi.abi;
-const contractAddress = "0x0eeC786AF0C92a40E0B4D46D750fdd0a1fC8211F";
+const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
 
 const MetamaskMain = () => {
   const navigate = useNavigate();
   const { metaAddress, setMetaAddress } = useUserStore();
-  const [connected, setConnected] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [provider, setProvider] = React.useState<any>(undefined);
-  const [activeTab, setActiveTab] = React.useState('balance');
-  const [contract, setContract] = React.useState<any>(undefined);
+  const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [provider, setProvider] = useState<any>(undefined);
+  const [activeTab, setActiveTab] = useState('balance');
+  const [contract, setContract] = useState<any>(undefined);
+  const toast = useLocation().state?.toast;
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
     if (provider) {
@@ -70,7 +73,7 @@ const MetamaskMain = () => {
     <>
       <Navbar bg="dark" expand="lg" variant="dark">
         <Container>
-          <Navbar.Brand href="#home">Blockchain Wallet & NFT</Navbar.Brand>
+          <Navbar.Brand href="/">Blockchain Wallet & NFT</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
@@ -84,6 +87,7 @@ const MetamaskMain = () => {
       {metaAddress && activeTab === 'balance' && <MetaOver provider={provider} contract={contract} ></MetaOver>}
       {metaAddress && activeTab === 'mint' && <></>}
       {metaAddress && activeTab === 'gallery' && <></>}
+      {toast && <LoginToast msg="Metamask로 로그인 되었습니다." stateFn={setShow} show={show} />}
     </>
   );
 };
