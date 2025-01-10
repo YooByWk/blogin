@@ -65,7 +65,7 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
     try {
       console.log(await contract.methods.owner().call());
       await contract.methods.custom_mintNFT(metaAddress, url).send({ from: metaAddress });
-      getNFTInfo();
+      // getNFTInfo();
       window.alert('성공~');
     }
     catch (error) {

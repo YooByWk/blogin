@@ -11,16 +11,18 @@ datasource db {
 }
 
 model Token {
-  tokenId       Int    @id @default(autoincrement())
-  owner_address String
-  tokenURI      String
-  logs          Log[]
+  tokenId  Int    @id @default(autoincrement())
+  user     String
+  tokenURI String
+  logs     Log[]
+
+  @@unique([user, tokenId])
 }
 
 model Log {
-  id         Int      @id @default(autoincrement())
-  tokenId    Int
-  event_type String
-  timestamp  DateTime @default(now())
-  token      Token    @relation(fields: [tokenId], references: [tokenId])
+  id        Int      @id @default(autoincrement())
+  tokenId   Int
+  eventType String
+  timestamp DateTime @default(now())
+  token     Token    @relation(fields: [tokenId], references: [tokenId])
 }
