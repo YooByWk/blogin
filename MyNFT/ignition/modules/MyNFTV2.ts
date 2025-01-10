@@ -1,5 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import proxyModule from "./MyNFT";
+import proxyModule from "./MyNFT_hol";
 
 
 const upgradeModule = buildModule("UpgradeModule", (m) => {
@@ -8,7 +8,7 @@ const upgradeModule = buildModule("UpgradeModule", (m) => {
 
   const myNFTV2 = m.contract("MyNFTV2");
   console.log('MyNFTV2 배포');
-  const encodedFuntionCall = m.encodeFunctionCall(myNFTV2, "author");
+  const encodedFuntionCall = m.encodeFunctionCall(myNFTV2, "initialize");
   m.call(proxyAdmin, "upgradeAndCall", [proxy, myNFTV2, encodedFuntionCall]);
 
   return { proxyAdmin, proxy };
