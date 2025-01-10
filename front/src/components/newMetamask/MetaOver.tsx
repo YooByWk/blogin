@@ -49,6 +49,7 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
     }
   };
 
+  // NFT 클릭 시 이벤트 함수
   const onNFTClick = async (url) => {
     console.log(url);
     const res = await contract.methods.tokenURI(url).call();
@@ -70,7 +71,7 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
     catch (error) {
       console.log(error);
     }
-  };
+  }; // NFT 민팅 함수 끝
 
   useEffect(() => {
     const getBalance = async () => {

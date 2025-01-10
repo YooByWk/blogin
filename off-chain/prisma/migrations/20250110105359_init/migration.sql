@@ -1,0 +1,15 @@
+-- CreateTable
+CREATE TABLE "Token" (
+    "tokenId" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "owner_address" TEXT NOT NULL,
+    "tokenURI" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Log" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "tokenId" INTEGER NOT NULL,
+    "event_type" TEXT NOT NULL,
+    "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Log_tokenId_fkey" FOREIGN KEY ("tokenId") REFERENCES "Token" ("tokenId") ON DELETE RESTRICT ON UPDATE CASCADE
+);
