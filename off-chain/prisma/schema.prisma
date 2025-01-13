@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Token {
-  tokenId     Int    @id @default(autoincrement())
+  tokenId     Int    @id @unique
   tokenURI    String
   logs        Log[]
   userAddress String
@@ -33,6 +33,8 @@ model Log {
   transactionHash String
   userAddress     String?
   tokenId         Int
+  from            String
+  to              String
 
   token Token @relation(fields: [tokenId], references: [tokenId])
   User  User? @relation(fields: [userAddress], references: [address])
