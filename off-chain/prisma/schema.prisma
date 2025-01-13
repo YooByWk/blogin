@@ -11,18 +11,35 @@ datasource db {
 }
 
 model Token {
-  tokenId  Int    @id @default(autoincrement())
-  user     String
-  tokenURI String
-  logs     Log[]
+  tokenId     Int    @id @default(autoincrement())
+  tokenURI    String
+  logs        Log[]
+  userAddress String
 
-  @@unique([user, tokenId])
+  isBurnt   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  burntAt   DateTime?
+
+  User User? @relation(fields: [userAddress], references: [address])
 }
 
 model Log {
-  id        Int      @id @default(autoincrement())
-  tokenId   Int
-  eventType String
-  timestamp DateTime @default(now())
-  token     Token    @relation(fields: [tokenId], references: [tokenId])
+  id              Int      @id @default(autoincrement())
+  eventType       String
+  timestamp       DateTime @default(now())
+  blockId         Int
+  topic           String
+  transactionHash String
+  userAddress     String?
+  tokenId         Int
+
+  token Token @relation(fields: [tokenId], references: [tokenId])
+  User  User? @relation(fields: [userAddress], references: [address])
+}
+
+model User {
+  address String  @id @unique
+  tokens  Token[]
+  logs    Log[]
 }
