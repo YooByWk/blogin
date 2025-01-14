@@ -16,6 +16,7 @@ export class TokenLogService {
     await this.prisma.log.create({
       data: {
         ...logDto,
+        topic: logDto.topic ? logDto.topic : undefined,
         tokenId: parseInt(logDto.tokenId.toString())
       }
     });

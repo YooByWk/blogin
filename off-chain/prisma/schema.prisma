@@ -29,7 +29,7 @@ model Log {
   eventType       String
   timestamp       DateTime @default(now())
   blockId         Int
-  topic           String
+  topic           String?
   transactionHash String
   userAddress     String?
   tokenId         Int

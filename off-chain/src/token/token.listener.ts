@@ -4,13 +4,14 @@ import { TokenService } from './token.service';
 import { ethers } from 'ethers';
 import { abi } from '../../mainAbi.json';
 
-const provider = new ethers.WebSocketProvider('wss://holesky.drpc.org');
-const contractAddress = "0x038852e125283121375032f483E61d9F1A4CE206";
+let provider = new ethers.WebSocketProvider('wss://holesky.drpc.org');
+const contractAddress = "0x038852e125283121375032f483E61d9F1A4CE206"; // 해당 컨트랙트 사용을 권장합니다.
 
 @Injectable()
 export class TokenListener {
   private contract: ethers.Contract;
   private eventQueue: (() => Promise<void>)[] = [];
+  private isProcessingQueue = false;
 
   constructor(
     private readonly tokenService: TokenService,
@@ -20,11 +21,13 @@ export class TokenListener {
 
   /**
    * @dev 모듈 초기화 시 실행
+   * @todo 웹소켓 죽는 문제 해결...
    */
   async onModuleInit() {
-    const latestSyncedBlock = await this.tokenService.getLatestSyncedBlock();
+    console.log(provider.websocket);
+    const latestSyncedBlock = await this.tokenService.getLatestSyncedBlock() + 1;
     const currentBlock = await provider.getBlockNumber();
-    console.log(currentBlock);
+    // console.log(latestSyncedBlock, currentBlock);
     const startBlock = latestSyncedBlock || 0;
 
     // 과거 블록 이벤트 저장 로직
@@ -35,26 +38,36 @@ export class TokenListener {
       console.log(`최신 블록 데이터만 동기화합니다. (fromBlock: ${latestSyncedBlock})`);
       await this.syncHistoricalEvents(latestSyncedBlock, currentBlock);
     }
+    provider.on('debug', (code, reason) => {
+      console.log(code, reason);
+    });
+
+    provider.on('error', (code, reason) => {
+      console.log(code, reason);
+      setTimeout(() => {
+        console.log('재연결');
+        provider = new ethers.WebSocketProvider('wss://holesky.drpc.org');
+        this.contract = new ethers.Contract(contractAddress, abi, provider);
+      }, 2000);
+    });
     // 이벤트 리스닝
-    console.log(this.eventQueue);
     await this.processQueue();
     await this.listenToContractEvents();
+
   }
 
   // 계약 이벤트 리스닝
   async listenToContractEvents() {
-
+    console.log('리스닝');
     // 'Mint' 이벤트 리스닝
     this.contract.on('Minted', async (user: string, tokenId, tokenURI: string, event: any) => {
-      console.log(event);
       this.queueEvent(() => this.handleMintEvent(user, tokenId, tokenURI, event));
       await this.processQueue(); // 큐 처리 호출
-
     });
 
     // 'Burn' 이벤트 리스닝
-    this.contract.on('Burnt', async (user: string, tokenId) => {
-      this.queueEvent(() => this.handleBurnEvent(user, tokenId));
+    this.contract.on('Burnt', async (user: string, tokenId, event) => {
+      this.queueEvent(() => this.handleBurnEvent(user, tokenId, event));
       await this.processQueue(); // 큐 처리 호출
 
     });
@@ -78,37 +91,46 @@ export class TokenListener {
 
   // 큐 처리
   async processQueue() {
+    if (this.isProcessingQueue) return;
+    this.isProcessingQueue = true;
+
     while (this.eventQueue.length > 0) {
-      const task = this.eventQueue.shift(); // 큐에서 작업 하나를 꺼냄
+      const task = this.eventQueue.shift();
       if (task) {
-        await task(); // 순차적으로 실행 (task가 끝날 때까지 대기)
+        try {
+          await task();
+        } catch (error) {
+          console.error('Queue processing error:', error);
+        }
       }
     }
+    this.isProcessingQueue = false;
   }
 
   // 민팅 이벤트 처리
   async handleMintEvent(user: string, tokenId: BigInt, tokenURI: string, event: ethers.ContractEventPayload) {
-
     const logDto = this.eventParser(event, 'Minted');
-    // await this.tokenService.saveMintedToken(user, parseInt(tokenId.toString()), tokenURI);
+    await this.tokenService.saveMintedToken(logDto);
     console.log('Mint event handled', new Date());
-
   }
 
   // 소각 이벤트 처리
-  async handleBurnEvent(user: string, tokenId: BigInt) {
-    // await this.tokenService.removeBurnedToken(user, parseInt(tokenId.toString()));
+  async handleBurnEvent(user: string, tokenId: BigInt, event: ethers.ContractEventPayload) {
+    const logDto = this.eventParser(event, 'Burnt');
+
+    await this.tokenService.removeBurnedToken(logDto);
     console.log('Burn event handled');
   }
 
 
   // 소유권 이전 이벤트 처리
-  async handleTransferEvent(from: string, to: string, tokenId: BigInt, event: any) {
+  async handleTransferEvent(from: string, to: string, tokenId: BigInt, event: ethers.ContractEventPayload) {
     if (from === '0x0000000000000000000000000000000000000000') { console.log('발행'); return; }
     if (to === '0x0000000000000000000000000000000000000000') { console.log('소각'); return; }
 
-    console.log(event);
-    // await this.tokenService.updateTokenOwnership(from, to, parseInt(tokenId.toString()));
+    const logDto = this.eventParser(event, 'Transfer');
+
+    await this.tokenService.updateTokenOwnership(logDto);
     console.log('Transfer event handled');
   }
 
@@ -201,8 +223,51 @@ export class TokenListener {
     }
   }
 
-  private eventParser(event: any, eventType: string) {
-    // const logData = {}
+  private eventParser(event: ethers.ContractEventPayload, eventType: string): TokenLogDto {
+    const tmpLogDto = {
+      eventType,
+      timestamp: new Date(),
+      blockId: event.log.blockNumber,
+      transactionHash: event.log.transactionHash,
+    };
+    if (eventType === 'Minted') {
+      const [to, tokenId, tokenURI] = event.args;
+
+      const logDto = {
+        ...tmpLogDto,
+        to,
+        from: "0x0000000000000000000000000000000000000000",
+        tokenId,
+        tokenURI,
+        userAddress: to
+      };
+      return logDto;
+
+    } else if (eventType === 'Burnt') {
+      const [from, tokenId] = event.args;
+      const logDto = {
+        ...tmpLogDto,
+        to: "0x0000000000000000000000000000000000000000",
+        from,
+        tokenId,
+        userAddress: from
+      };
+      return;
+    } else if (eventType === 'Transfer') {
+      if (event.args[0] === '0x0000000000000000000000000000000000000000' || event.args.length === 2) {
+        return;
+      }
+      const [from, to, tokenId] = event.args;
+      const logDto = {
+        ...tmpLogDto,
+        tokenId,
+        from,
+        to,
+        userAddress: to
+      };
+      return logDto;
+    }
+
 
   }
 }

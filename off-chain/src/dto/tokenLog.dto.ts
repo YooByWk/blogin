@@ -3,10 +3,10 @@ export class TokenLogDto {
   eventType: string;
   timestamp: Date;
   blockId: number;
-  topic: string;
   transactionHash: string;
   userAddress?: string;
   from: string;
   to: string;
+  topic?: string;
   tokenURI?: string;
 }

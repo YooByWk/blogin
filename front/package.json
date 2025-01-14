@@ -16,6 +16,7 @@
     "@wepin/provider-js": "^0.0.30",
     "@wepin/sdk-js": "^0.0.30",
     "@wepin/wagmi-connector": "^2.0.0",
+    "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "ethers": "^6.13.4",
     "ethers-types": "^3.17.3",

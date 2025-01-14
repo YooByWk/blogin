@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import { abi } from '../../mainAbi.json';
 
 const provider = new ethers.WebSocketProvider('wss://holesky.drpc.org');
-const contractAddress = "0x038852e125283121375032f483E61d9F1A4CE206";
+const contractAddress = "0x038852e125283121375032f483E61d9F1A4CE206"; // 해당 컨트랙트 사용을 권장합니다.
 const contract = new ethers.Contract(contractAddress, abi, provider);
 @Injectable()
 export class TokenService {
@@ -109,16 +109,24 @@ export class TokenService {
 
   // 특정 유저의 토큰을 조회
   private async findTokensByUser(address: string) {
-    return await this.prisma.user.findMany({
-      where: { address },
+    const tokens = await this.prisma.token.findMany({
+      where: { userAddress: address },
     });
+    return tokens;
   }
 
   async getLatestSyncedBlock() {
-    this.prisma.log.findFirst({
-      where: {}
-    });
-    return null;
+    try {
+      const log = await this.prisma.log.findFirst({
+        orderBy: { id: 'desc' }
+      });
+      return log.blockId;
+
+    } catch {
+      return null;
+    }
+
+
   }
 
 }
