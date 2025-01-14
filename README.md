@@ -107,12 +107,24 @@ npm start
 3. 지갑 연결 후, 원하는 데이터를 입력하고 NFT를 발급합니다.
 4. 발급된 NFT는 사용자의 지갑에서 확인할 수 있습니다.
 
+- 아직은 백엔드 최초 실행시, 블록의 범위가 넓어 버벅이거나 오류가 날 수 있습니다.
+
+## 갤러리
+
 - 이미지를 가져온 모습
 
 ![image](https://github.com/user-attachments/assets/81b17c5a-913c-4232-ae2d-5019fc6fe6e9)
 
 - wepin 지갑 위젯의 모습 
-  ![image](https://github.com/user-attachments/assets/dca9dcd6-1922-4271-9dba-7356dc9462d3)
+![image](https://github.com/user-attachments/assets/dca9dcd6-1922-4271-9dba-7356dc9462d3)
+
+- 이더스캔에서 확인한 토큰 발행량과, 소유자
+![image](https://github.com/user-attachments/assets/7c906e7a-ddea-4c1c-8536-adc425f5cd05)
+
+- DB에 기록한 토큰 기록
+![image](https://github.com/user-attachments/assets/9613340a-ab99-489b-812e-13bf5258b8ed)
+
+[이더스캔 링크](https://holesky.etherscan.io/token/0x038852e125283121375032f483e61d9f1a4ce206)
 
 
 ## 참고자료
