@@ -93,9 +93,12 @@ const MetamaskMain = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link onClick={() => setActiveTab('balance')} >Wallet</Nav.Link>
-              <Nav.Link onClick={() => setActiveTab('mint')}>Mint NFT</Nav.Link>
-              <Nav.Link onClick={() => setActiveTab('gallery')}>NFT Gallery</Nav.Link>
+              {/* <Nav.Link onClick={() => setActiveTab('balance')} >Wallet</Nav.Link> */}
+              {/* <Nav.Link onClick={() => setActiveTab('mint')}>Mint NFT</Nav.Link> */}
+              {/* <Nav.Link onClick={() => setActiveTab('gallery')}>NFT Gallery</Nav.Link> */}
+              <Nav.Link onClick={() => navigate('/metamaskmainpage')}>MetaMask Main</Nav.Link>
+              <Nav.Link onClick={() => navigate('/wepinLogin')}>Wepin Login</Nav.Link>
+
             </Nav>
           </Navbar.Collapse>
         </Container>

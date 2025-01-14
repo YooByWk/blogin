@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useUserStore from '../stores/user';
 import { WepinSDK } from '@wepin/sdk-js';
+import { Navbar, Container, Nav } from 'react-bootstrap';
 
 const WepinLoginButton = () => {
   const { accessToken, setAccessToken, refreshToken, setRefreshToken } = useUserStore();
@@ -60,6 +61,22 @@ const WepinLoginButton = () => {
 
   return (
     <div>
+      <Navbar bg="dark" expand="lg" variant="dark">
+        <Container>
+          <Navbar.Brand href="/">Blockchain Wallet & NFT</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              {/* <Nav.Link onClick={() => setActiveTab('balance')} >Wallet</Nav.Link> */}
+              {/* <Nav.Link onClick={() => setActiveTab('mint')}>Mint NFT</Nav.Link> */}
+              {/* <Nav.Link onClick={() => setActiveTab('gallery')}>NFT Gallery</Nav.Link> */}
+              <Nav.Link onClick={() => navigate('/metamaskmainpage')}>MetaMask Main</Nav.Link>
+              <Nav.Link onClick={() => navigate('/wepinLogin')}>Wepin Login</Nav.Link>
+
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
       <button onClick={onGoogleLoginClick} >Wepin Login with Google</button>
     </div >
   );

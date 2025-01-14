@@ -4,6 +4,8 @@ import useUserStore from '../../stores/user';
 import Web3, { Contract } from 'web3';
 import abi from "../../abi/mainNFTContract#mainNFTContract.json";
 import MetaMintModal from './MetaMintModal';
+import axios from 'axios';
+import { ethers } from 'ethers';
 
 const constractABI = abi.abi;
 
@@ -16,34 +18,17 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
   const [balance, setBalance] = useState<number | undefined>(undefined);
   const { metaAddress } = useUserStore();
 
-  const [urlLst, setUrlLst] = useState<string[]>([]); // URL 리스트 상태
+  const [urlLst, setUrlLst] = useState<any>([]); // URL 리스트 상태
 
 
 
   const getNFTInfo = async () => {
     if (!contract) return;
     try {
-      console.log(contract.events.Transfer({
-        fromBlock: 0,  // 블록 범위 설정 (여기서는 0부터 시작)
-      })
-        .on('data', (event) => {
-          console.log('Event Data:', event.returnValues);  // 이벤트에서 반환된 값
-        })
-        , 'evnets');
-      // const res: string[] = (await contract.methods.getNFTsByOwner(metaAddress).call()) || []; // 빈 배열 처리
-      const own = await contract.methods.balanceOf(metaAddress).call();
-      // const nfts: string[] = await Promise.all(
-      //   res.map(async (id) => {
-      //     const curOwner = await contract.methods.ownerOf(id).call();
-      //     const isOwner = String(curOwner).toLowerCase() === String(metaAddress).toLowerCase();
-      //     console.log(id, isOwner);
-      //     if (!isOwner) return '';  // 소유자가 아니면 빈 문자열 반환
-      //     const uri: string = await contract.methods.getTokenURI(id).call();
-      //     return uri;
-      //   })
-      // );
-      // console.log(nfts);
-      // setUrlLst(nfts);
+      const validAddress = ethers.getAddress(metaAddress);
+      const res = await axios.get(`http://127.0.0.1:8080/token/${validAddress}`);
+      console.log(res.data);
+      setUrlLst(res.data);
     } catch (error) {
       console.log(error);
       setUrlLst([]); // 에러 발생 시 빈 배열로 초기화
@@ -65,11 +50,11 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
 
     try {
       console.log(await contract.methods.owner().call());
-      const receipt = await contract.methods.custom_mintNFT(metaAddress, url).send({ from: metaAddress });
-      // getNFTInfo();
+      await contract.methods.custom_mintNFT(metaAddress, url).send({ from: metaAddress }).then(() => getNFTInfo());
       // console.log(receipt.transactionHash);
       // await web3.eth.getTransactionReceipt(receipt.transactionHash);
-      console.log(receipt);
+      // console.log(receipt);
+      getNFTInfo();
       window.alert('성공~');
     }
     catch (error) {
@@ -118,11 +103,11 @@ const MetaOver = ({ provider, contract }: IMetaOver) => {
           <>
             <h1 className='d-flex justify-content-center align-items-center'>내 NFT 목록</h1>
             <Row className='d-flex justify-content-center align-items-center mb-3 g-3' xs={1} md={2} lg={3}>
-              {urlLst.map((url, index) => (
-                url !== '' && (
+              {urlLst.map((token, index) => (
+                token !== '' && (
                   <Col key={index} style={colStyle}>
-                    <Card style={cardContStyle} onClick={() => onNFTClick(index)}>
-                      <Card.Img variant="top" src={url} style={cardStyle} />
+                    <Card style={cardContStyle} onClick={() => onNFTClick(token.tokenId)}>
+                      <Card.Img variant="top" src={token.tokenURI} style={cardStyle} />
                     </Card>
                   </Col>)
               )

@@ -1,10 +1,12 @@
 import { Account, AccountBalanceInfo, WepinSDK } from '@wepin/sdk-js';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Spinner } from 'react-bootstrap';
+import { Button, Card, Container, Nav, Navbar, Spinner } from 'react-bootstrap';
 import TxWidget from './metamask/TxWidget';
+import { useNavigate } from 'react-router-dom';
 
 
 const WepinWidget = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [userWallet, setUserWallet] = useState<Account[]>();
   const [userBalance, setUserBalance] = useState<AccountBalanceInfo[]>();
@@ -54,6 +56,22 @@ const WepinWidget = () => {
         ? <Spinner></Spinner>
         :
         <>
+          <Navbar bg="dark" expand="lg" variant="dark">
+            <Container>
+              <Navbar.Brand href="/">Blockchain Wallet & NFT</Navbar.Brand>
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse id="basic-navbar-nav">
+                <Nav className="me-auto">
+                  {/* <Nav.Link onClick={() => setActiveTab('balance')} >Wallet</Nav.Link> */}
+                  {/* <Nav.Link onClick={() => setActiveTab('mint')}>Mint NFT</Nav.Link> */}
+                  {/* <Nav.Link onClick={() => setActiveTab('gallery')}>NFT Gallery</Nav.Link> */}
+                  <Nav.Link onClick={() => navigate('/metamaskmainpage')}>MetaMask Main</Nav.Link>
+                  <Nav.Link onClick={() => navigate('/wepinLogin')}>Wepin Login</Nav.Link>
+
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
           <Button onClick={() => wepinSdk.openWidget()}>지갑 위젯 열기</Button>
           <p style={{ height: '50px' }}></p>
           <Card bg={'dark'} style={{ color: 'whitesmoke', width: '80%' }}>
